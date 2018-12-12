@@ -1,0 +1,82 @@
+<html>
+	<head>
+		<title>KAC12 - CS32420 Assignment - Angry Blobs</title>
+		<link rel="stylesheet" type="text/css" href="styles.css">
+	</head>
+	<body>
+		<script src="lib/three.min.js"></script>
+		<script src="lib/physi.js"></script>
+		<script type="module">
+			import { GameEngine } from "./GameEngine.js";
+
+			Physijs.scripts.worker = "./lib/physijs_worker.js";
+			Physijs.scripts.ammo = "./ammo.js"; //ammo is loaded relative to worker's dir
+
+            let gameEngine = new GameEngine();
+			let promises = gameEngine.initialise();
+
+			/* Loading resources is done asynchronously, so wait until all have been loaded */
+			Promise.all(promises).then(function() {
+				gameEngine.main();
+			});
+
+			/* button handlers for menu */
+			document.getElementById ("debug").addEventListener ("click", btn_debugToggle, false);
+			document.getElementById ("ai").addEventListener ("click", btn_aiGen, false);
+			document.getElementById ("newGame").addEventListener ("click", btn_startGame, false);
+
+			/* Debug mode button handler */
+			function btn_debugToggle() {
+				gameEngine.toggleDebug();
+				if (gameEngine.debug == 1) {
+					document.getElementById("debug").innerHTML = "DEBUG: ON";
+				} else {
+					document.getElementById("debug").innerHTML = "DEBUG: OFF";
+				}
+			}
+
+			/* AI generation button handler */
+			function btn_aiGen() {
+				document.getElementById("ai").innerHTML = "AI Generations: " + gameEngine.toggleGenerations();
+			}
+
+			/* Start game button handler */
+			function btn_startGame() {
+				document.getElementById("menuDiv").style.display = "none";
+				document.getElementById("scoresDiv").style.display = "block";
+				document.getElementById("turnDiv").style.display = "block";
+				document.getElementById("titleDiv").style.display = "none";
+				gameEngine.startGame();
+			}
+		</script>
+
+
+		<!-- HTML of the page - all div/p/button elements that occur in the game are set up here -->
+		<div id="titleDiv">
+			<p id="title" ><font size=1>Not so</font> &nbsp&nbsp&nbsp&nbsp   <font class="titleText"> ANGRY  <strike>BLOBS</strike> DOGS</font></p>
+		</div>
+		<div id="gameOverDiv" style="display: none">
+			<p id="gameOverText" class="titleText"></p>
+		</div>
+		<div id="menuDiv">
+			<button type="button" class="menuButton" id="newGame">New Game</button>
+			<button type="button" class="menuButton" id="ai">[ Select AI Generations ]</button>
+			<button type="button" class="menuButton" id="debug">DEBUG: OFF</button></div>
+		</div>
+		<div id="debugDiv" style="display:none">
+			<p id="debugContainer" class="debugText">Current state:</p>
+		</div>
+		<div id="scoresDiv" style="display:none">
+			<p id="scoresContainer" class="scoresText">Score (Player): 0 <br/> Score (AI): 0</p>
+		</div>
+		<div id="turnDiv" style="display:none">
+			<p id="turnContainer" class="turnText">Current Turn: <font color="red">Player</font></p>
+		</div>
+		<div id="evalDiv" style="display:none">
+			<p id="evalContainer" class="turnText">Score gained: <font color="red">0</font></p>
+		</div>
+		<div id="proceedDiv" style="display:none">
+			<button type="button" class="menuButton" id="proceed">Continue</button>
+		</div>
+	</body>
+</html>
